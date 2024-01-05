@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  apache:
+    image: httpd:latest #2.4
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      #- ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf #/etc/apache2/sites-enabled/httpd.conf #/usr/local/apache2/conf/httpd.conf
+      - ./apache/ssl/server.crt:/usr/local/apache2/conf/ssl/server.crt
+      - ./apache/ssl/server.key:/usr/local/apache2/conf/ssl/server.key
+      - ./data/html:/usr/local/apache2/htdocs
+      - ./php:/var/www/html
+    depends_on:
+      - php
+
+  php:
+    image: php:7.4-fpm-alpine
+    command: ["php-fpm", "-F"]
+    volumes:
+      - ./data/html:/var/www/html
+      - ./data/html:/usr/local/apache2/htdocs
